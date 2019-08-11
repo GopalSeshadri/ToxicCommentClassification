@@ -44,7 +44,7 @@ class Preprocess:
     def readTestData():
         test_df = pd.read_csv('Data/test.csv')
         test_df = test_df.dropna()
-        train_df['comment_text'] = train_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
+        test_df['comment_text'] = test_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
         comment = test_df['comment_text'].values
 
         test_labels_df = pd.read_csv('Data/test_labels.csv')

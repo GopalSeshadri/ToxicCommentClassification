@@ -83,7 +83,7 @@ hybrid_model = Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH)
 hybrid_model.fit(padded, target,
             batch_size = 128,
             validation_split = 0.2,
-            epochs = 20)
+            epochs = 5)
 
 hybrid_model_accuracy = hybrid_model.evaluate(padded_test, target_test)
 print('[INFO] Test Accuracy of Hybrid Model is {}'.format(round(hybrid_model_accuracy[1], 2)))

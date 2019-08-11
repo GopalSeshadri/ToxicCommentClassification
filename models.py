@@ -67,5 +67,5 @@ class Models:
         output = Dense(6, activation = 'sigmoid')(x)
 
         hybrid_model = Model(input, output)
-        hybrid_model.compile(optimizer = Adam(0.01), loss = 'binary_crossentropy', metrics = ['accuracy'])
+        hybrid_model.compile(optimizer = Adam(0.0003), loss = 'binary_crossentropy', metrics = ['accuracy'])
         return hybrid_model
