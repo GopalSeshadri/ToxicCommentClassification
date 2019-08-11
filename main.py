@@ -3,6 +3,7 @@ import pandas as pd
 from preprocess import Preprocess
 from models import Models
 import pickle
+from sklearn.metrics import roc_auc_score
 
 MAX_VOCAB_SIZE = 20000
 MAX_SEQ_LENGTH = 200
@@ -19,6 +20,8 @@ padded = Preprocess.padSequences(sequence, MAX_SEQ_LENGTH)
 comment_test, target_test = Preprocess.readTestData()
 sequence_test = tokenizer.texts_to_sequences(comment_test)
 padded_test = Preprocess.padSequences(sequence_test, MAX_SEQ_LENGTH)
+target_test = target_test.astype(bool)
+print(target_test.dtype)
 
 ## Creating Embedding Matrix
 word2vec = Preprocess.getWord2Vec()
@@ -40,7 +43,7 @@ print('[INFO] Test Accuracy of CNN Model is {}'.format(round(cnn_model_accuracy[
 auc_list = []
 predicted = cnn_model.predict(padded_test)
 for i in range(6):
-    auc = roc_auc_score(target[:, j], predicted[:, j])
+    auc = roc_auc_score(target_test[:, i], predicted[:, i])
     auc_list.append(auc)
 mean_auc = np.mean(auc_list)
 print('[INFO] The mean AUC score over each tag is {}'.format(mean_auc))
@@ -51,3 +54,27 @@ with open('Models/cnn_model.json', 'w') as json_file:
     json_file.write(cnn_model_json)
 cnn_model.save_weights('Models/cnn_model.h5')
 #######################################################################################
+## Fitting RNN Model
+rnn_model = Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH)
+rnn_model.fit(padded, target,
+            batch_size = 128,
+            validation_split = 0.2,
+            epochs = 1)
+
+rnn_model_accuracy = rnn_model.evaluate(padded_test, target_test)
+print('[INFO] Test Accuracy of RNN Model is {}'.format(round(rnn_model_accuracy[1], 2)))
+
+## Calculating AUC score for RNN model
+auc_list = []
+predicted = rnn_model.predict(padded_test)
+for i in range(6):
+    auc = roc_auc_score(target_test[:, i], predicted[:, i])
+    auc_list.append(auc)
+mean_auc = np.mean(auc_list)
+print('[INFO] The mean AUC score over each tag is {}'.format(mean_auc))
+
+## Saving the CNN Model
+rnn_model_json = rnn_model.to_json()
+with open('Models/rnn_model.json', 'w') as json_file:
+    json_file.write(rnn_model_json)
+rnn_model.save_weights('Models/rnn_model.h5')

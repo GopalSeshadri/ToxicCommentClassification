@@ -1,5 +1,6 @@
 from keras.layers import Input, Embedding, Dense
 from keras.layers import Conv1D, MaxPooling1D, GlobalMaxPooling1D
+from keras.layers import LSTM, Bidirectional
 from keras.models import Model
 
 class Models:
@@ -24,3 +25,21 @@ class Models:
         cnn_model = Model(input, output)
         cnn_model.compile(optimizer = 'Adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
         return cnn_model
+
+    def usingRNN(embedding_matrix,  max_seq_len):
+        embedding_layer = Embedding(embedding_matrix.shape[0],
+                            embedding_matrix.shape[1],
+                            weights = [embedding_matrix],
+                            input_length = max_seq_len,
+                            trainable = False)
+
+        input = Input(shape = (max_seq_len,))
+        x = embedding_layer(input)
+        x = LSTM(32, retun_sequences = True)(x)
+        x = GlobalMaxPooling1D()(x)
+        x = Dense(128, activation = 'relu')(x)
+        output = Dense(6, activation = 'sigmoid')(x)
+
+        rnn_model = Model(input, output)
+        rnn_model.compile(optimizer = 'Adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+        return rnn_model
