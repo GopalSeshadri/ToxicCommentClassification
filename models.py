@@ -2,6 +2,9 @@ from keras.layers import Input, Embedding, Dense
 from keras.layers import Conv1D, MaxPooling1D, GlobalMaxPooling1D
 from keras.layers import LSTM, Bidirectional
 from keras.models import Model
+from keras.optimizers import Adam
+from sklearn.metrics import f1_score
+import keras_metrics
 
 class Models:
     def usingCNN(embedding_matrix,  max_seq_len):
@@ -64,5 +67,5 @@ class Models:
         output = Dense(6, activation = 'sigmoid')(x)
 
         hybrid_model = Model(input, output)
-        hybrid_model.compile(optimizer = 'Adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+        hybrid_model.compile(optimizer = Adam(0.01), loss = 'binary_crossentropy', metrics = ['accuracy'])
         return hybrid_model

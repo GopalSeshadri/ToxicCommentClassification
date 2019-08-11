@@ -4,8 +4,24 @@ import keras
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 import sys
+import string
+import nltk
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
 
 class Preprocess:
+    stop_words = set(stopwords.words('english'))
+
+    def preprocessText(sentence):
+        sentence = ' '.join(sentence.split())
+        sentence = sentence.lower()
+        sentence = sentence.translate(str.maketrans('', '', string.punctuation))
+        lemmatizer = WordNetLemmatizer()
+        words = word_tokenize(sentence)
+        sentence = ' '.join([lemmatizer.lemmatize(word) for word in words if word not in Preprocess.stop_words])
+        return sentence
+
     # Reading the Glove Vector
     def getWord2Vec():
         word2vec = {}
@@ -19,7 +35,7 @@ class Preprocess:
     def readTrainData():
         train_df = pd.read_csv('Data/train.csv')
         train_df = train_df.dropna()
-        train_df['comment_text'] = train_df['comment_text'].apply(lambda x: ' '.join(x.split()))
+        train_df['comment_text'] = train_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
         comment = train_df['comment_text'].values
         target = train_df[['toxic',	'severe_toxic',	'obscene', 'threat', 'insult', 'identity_hate']].values
         return comment, target
@@ -28,7 +44,7 @@ class Preprocess:
     def readTestData():
         test_df = pd.read_csv('Data/test.csv')
         test_df = test_df.dropna()
-        test_df['comment_text'] = test_df['comment_text'].apply(lambda x: ' '.join(x.split()))
+        train_df['comment_text'] = train_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
         comment = test_df['comment_text'].values
 
         test_labels_df = pd.read_csv('Data/test_labels.csv')

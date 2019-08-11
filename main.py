@@ -21,7 +21,6 @@ comment_test, target_test = Preprocess.readTestData()
 sequence_test = tokenizer.texts_to_sequences(comment_test)
 padded_test = Preprocess.padSequences(sequence_test, MAX_SEQ_LENGTH)
 target_test = target_test.astype(bool)
-print(target_test.dtype)
 
 ## Creating Embedding Matrix
 word2vec = Preprocess.getWord2Vec()
@@ -84,7 +83,7 @@ hybrid_model = Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH)
 hybrid_model.fit(padded, target,
             batch_size = 128,
             validation_split = 0.2,
-            epochs = 1)
+            epochs = 20)
 
 hybrid_model_accuracy = hybrid_model.evaluate(padded_test, target_test)
 print('[INFO] Test Accuracy of Hybrid Model is {}'.format(round(hybrid_model_accuracy[1], 2)))
