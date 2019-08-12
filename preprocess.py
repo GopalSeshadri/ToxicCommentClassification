@@ -4,6 +4,7 @@ import keras
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 import sys
+import re
 import string
 import nltk
 from nltk.corpus import stopwords
@@ -16,6 +17,12 @@ class Preprocess:
     def preprocessText(sentence):
         sentence = ' '.join(sentence.split())
         sentence = sentence.lower()
+        #remove \n
+        sentence = re.sub('\\n','',sentence)
+        # remove leaky elements like ip,user
+        sentence = re.sub('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}','',sentence)
+        #removing usernames
+        sentence = re.sub('\[\[.*\]','',sentence)
         sentence = sentence.translate(str.maketrans('', '', string.punctuation))
         lemmatizer = WordNetLemmatizer()
         words = word_tokenize(sentence)
@@ -36,8 +43,10 @@ class Preprocess:
         train_df = pd.read_csv('Data/train.csv')
         train_df = train_df.dropna()
         train_df['comment_text'] = train_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
+        train_df['sum'] = train_df['toxic'] + train_df['severe_toxic'] + train_df['obscene'] + train_df['threat'] + train_df['insult'] + train_df['identity_hate']
+        train_df['good'] = train_df['sum'].apply(lambda x: 1 if x == 0 else 0)
         comment = train_df['comment_text'].values
-        target = train_df[['toxic',	'severe_toxic',	'obscene', 'threat', 'insult', 'identity_hate']].values
+        target = train_df[['toxic',	'severe_toxic',	'obscene', 'threat', 'insult', 'identity_hate', 'good']].values
         return comment, target
 
     # Reading Training Data
@@ -48,7 +57,9 @@ class Preprocess:
         comment = test_df['comment_text'].values
 
         test_labels_df = pd.read_csv('Data/test_labels.csv')
-        target = test_labels_df[['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']].values
+        test_labels_df['sum'] = test_labels_df['toxic'] + test_labels_df['severe_toxic'] + test_labels_df['obscene'] + test_labels_df['threat'] + test_labels_df['insult'] + test_labels_df['identity_hate']
+        test_labels_df['good'] = test_labels_df['sum'].apply(lambda x: 1 if x == 0 else 0)
+        target = test_labels_df[['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'good']].values
         return comment, target
 
     # Tokenize the data

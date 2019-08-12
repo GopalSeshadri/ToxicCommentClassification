@@ -1,6 +1,6 @@
 from keras.layers import Input, Embedding, Dense
 from keras.layers import Conv1D, MaxPooling1D, GlobalMaxPooling1D
-from keras.layers import LSTM, Bidirectional
+from keras.layers import LSTM, Bidirectional, Dropout
 from keras.models import Model
 from keras.optimizers import Adam
 from sklearn.metrics import f1_score
@@ -40,7 +40,9 @@ class Models:
         x = embedding_layer(input)
         x = Bidirectional(LSTM(32, return_sequences = True))(x)
         x = GlobalMaxPooling1D()(x)
+        x = Dropout(0.1)(x)
         x = Dense(128, activation = 'relu')(x)
+        x = Dropout(0.1)(x)
         output = Dense(6, activation = 'sigmoid')(x)
 
         rnn_model = Model(input, output)
@@ -67,5 +69,5 @@ class Models:
         output = Dense(6, activation = 'sigmoid')(x)
 
         hybrid_model = Model(input, output)
-        hybrid_model.compile(optimizer = Adam(0.0003), loss = 'binary_crossentropy', metrics = ['accuracy'])
+        hybrid_model.compile(optimizer = Adam(0.0001), loss = 'binary_crossentropy', metrics = ['accuracy'])
         return hybrid_model
