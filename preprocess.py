@@ -46,7 +46,7 @@ class Preprocess:
         train_df['sum'] = train_df['toxic'] + train_df['severe_toxic'] + train_df['obscene'] + train_df['threat'] + train_df['insult'] + train_df['identity_hate']
         train_df['good'] = train_df['sum'].apply(lambda x: 1 if x == 0 else 0)
         comment = train_df['comment_text'].values
-        target = train_df[['toxic',	'severe_toxic',	'obscene', 'threat', 'insult', 'identity_hate', 'good']].values
+        target = train_df[['toxic',	'severe_toxic',	'obscene', 'threat', 'insult', 'identity_hate']].values
         return comment, target
 
     # Reading Training Data
@@ -59,7 +59,7 @@ class Preprocess:
         test_labels_df = pd.read_csv('Data/test_labels.csv')
         test_labels_df['sum'] = test_labels_df['toxic'] + test_labels_df['severe_toxic'] + test_labels_df['obscene'] + test_labels_df['threat'] + test_labels_df['insult'] + test_labels_df['identity_hate']
         test_labels_df['good'] = test_labels_df['sum'].apply(lambda x: 1 if x == 0 else 0)
-        target = test_labels_df[['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate', 'good']].values
+        target = test_labels_df[['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate']].values
         return comment, target
 
     # Tokenize the data
