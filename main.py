@@ -4,6 +4,7 @@ from preprocess import Preprocess
 from models import Models
 import pickle
 from sklearn.metrics import roc_auc_score
+import sys
 
 MAX_VOCAB_SIZE = 20000
 MAX_SEQ_LENGTH = 200
@@ -14,10 +15,11 @@ sequence, tokenizer, word2idx = Preprocess.tokenize(comment, MAX_VOCAB_SIZE)
 padded = Preprocess.padSequences(sequence, MAX_SEQ_LENGTH)
 # seq_sizes = pd.Series(np.array([len(each) for each in sequence]))
 # print(seq_sizes.describe())
-
+print(word2idx)
 
 ## Reading and Preprocessing Test Data
 comment_test, target_test = Preprocess.readTestData()
+comment_test = [list(np.array([each for each in sentence.split(' ')]).ravel()) for sentence in comment_test]
 sequence_test = tokenizer.texts_to_sequences(comment_test)
 padded_test = Preprocess.padSequences(sequence_test, MAX_SEQ_LENGTH)
 target_test = target_test.astype(bool)
@@ -27,6 +29,9 @@ word2vec = Preprocess.getWord2Vec()
 embedding_matrix = Preprocess.getEmbeddingMatrix(MAX_VOCAB_SIZE, word2idx, word2vec)
 number_of_words = len(embedding_matrix)
 
+## Saving the tokenizer
+with open('Models/tokenizer.pickle', 'wb') as file:
+    pickle.dump(tokenizer, file, protocol = pickle.HIGHEST_PROTOCOL)
 # #######################################################################################
 # ## Fitting CNN Model
 # cnn_model = Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH)
@@ -108,7 +113,8 @@ mcnn_model = Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH)
 mcnn_model.fit(padded, target,
             batch_size = 128,
             validation_split = 0.1,
-            epochs = 20)
+            epochs = 1,
+            shuffle = True)
 
 mcnn_model_accuracy = mcnn_model.evaluate(padded_test, target_test)
 print('[INFO] Test Accuracy of CNN Model is {}'.format(round(mcnn_model_accuracy[1], 2)))

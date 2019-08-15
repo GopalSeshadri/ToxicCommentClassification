@@ -1,6 +1,7 @@
-from keras.layers import Input, Embedding, Dense, Concatenate
-from keras.layers import Conv1D, MaxPooling1D, GlobalMaxPooling1D
+from keras.layers import Input, Embedding, Dense
+from keras.layers import Conv1D, MaxPooling1D, Concatenate
 from keras.layers import LSTM, Bidirectional, Dropout, SpatialDropout1D
+from keras.layers import GlobalMaxPooling1D, Lambda, GlobalAveragePooling1D
 from keras.models import Model
 from keras.optimizers import Adam
 from sklearn.metrics import f1_score
@@ -105,6 +106,9 @@ class Models:
         print(x4.shape)
 
         x = Concatenate(axis = 1)([x1, x2, x3, x4])
+
+        print(x.shape)
+
         x = Dropout(0.5)(x)
         x = Dense(128, activation = 'relu')(x)
         output = Dense(6, activation = 'sigmoid')(x)
@@ -112,3 +116,32 @@ class Models:
         mcnn_model = Model(input, output)
         mcnn_model.compile(optimizer = Adam(lr=1e-3, decay=1e-6), loss = 'binary_crossentropy', metrics = ['accuracy'])
         return mcnn_model
+
+    def usingMRNN(embedding_matrix,  max_seq_len):
+        embedding_layer = Embedding(embedding_matrix.shape[0],
+                            embedding_matrix.shape[1],
+                            weights = [embedding_matrix],
+                            input_length = max_seq_len,
+                            trainable = False)
+
+        input = Input(shape = (max_seq_len,))
+        x = embedding_layer(input)
+
+        x = SpatialDropout1D(0.2)(x)
+
+        x = Bidirectional(LSTM(64, return_sequences =  True))(x)
+        x = SpatialDropout1D(0.2)(x)
+        x = Bidirectional(LSTM(64, return_sequences =  True))(x)
+
+        last = Lambda(lambda t : t[:, -1])(x)
+        max = GlobalMaxPooling1D()(x)
+        avg = GlobalAveragePooling1D()(x)
+
+        x = Concatenate(axis = 1)([last, max, avg])
+        x = Dropout(0.5)(x)
+        x = Dense(128, activation = 'relu')(x)
+        output = Dense(6, activation = 'sigmoid')(x)
+
+        mrnn_model = Model(input, output)
+        mrnn_model.compile(optimizer = Adam(lr=1e-3, decay=1e-6), loss = 'binary_crossentropy', metrics = ['accuracy'])
+        return mrnn_model

@@ -15,7 +15,7 @@ class Preprocess:
     stop_words = set(stopwords.words('english'))
 
     def preprocessText(sentence):
-        sentence = ' '.join(sentence.split())
+        # sentence = ' '.join(sentence.split())
         sentence = sentence.lower()
         #remove \n
         sentence = re.sub('\\n','',sentence)
@@ -49,7 +49,7 @@ class Preprocess:
         target = train_df[['toxic',	'severe_toxic',	'obscene', 'threat', 'insult', 'identity_hate']].values
         return comment, target
 
-    # Reading Training Data
+    # Reading Testing Data
     def readTestData():
         test_df = pd.read_csv('Data/test.csv')
         test_df = test_df.dropna()
@@ -76,6 +76,7 @@ class Preprocess:
     def getEmbeddingMatrix(max_vocab, word2idx, word2vec):
         number_of_words = min(max_vocab, len(word2idx) + 1)
         embedding_matrix = np.zeros((number_of_words, 100)) # Here 100 is the dimension of GloVe Embeddings
+        embedding_matrix[0] = np.zeros((1, embedding_matrix.shape[1]))
         for word, idx in word2idx.items():
             if idx < max_vocab:
                 embedding_vector = word2vec.get(word)
