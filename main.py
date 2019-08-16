@@ -109,7 +109,7 @@ with open('Models/tokenizer.pickle', 'wb') as file:
 # hybrid_model.save_weights('Models/hybrid_model.h5')
 #####################################################################################
 ## Fitting Multi Channel CNN Model
-mcnn_model = Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH)
+mcnn_model = Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH)
 mcnn_model.fit(padded, target,
             batch_size = 128,
             validation_split = 0.1,

@@ -37,7 +37,8 @@ app.layout = html.Div([
         html.Button(id = 'submit-button', children = 'Submit')
     ], style = {'width' : '60%',
                 'height' : '80%',
-                'display' : 'inline-block'}),
+                'display' : 'inline-block',
+                'float' : 'left'}),
 
     html.Div([
         dash_table.DataTable(
@@ -52,7 +53,9 @@ app.layout = html.Div([
                 'color': 'white'
             }])
     ], style = {'width' : '25%',
-                'display' : 'inline-block'})
+                'display' : 'inline-block',
+                'float' : 'left',
+                'paddingLeft' : '50px'})
 ])
 
 @app.callback([Output(component_id = 'table', component_property = 'data'),

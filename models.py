@@ -1,7 +1,7 @@
 from keras.layers import Input, Embedding, Dense
 from keras.layers import Conv1D, MaxPooling1D, Concatenate
-from keras.layers import LSTM, Bidirectional, Dropout, SpatialDropout1D
-from keras.layers import GlobalMaxPooling1D, Lambda, GlobalAveragePooling1D
+from keras.layers import LSTM, Bidirectional, Dropout, CuDNNLSTM
+from keras.layers import GlobalMaxPooling1D, Lambda, GlobalAveragePooling1D, SpatialDropout1D
 from keras.models import Model
 from keras.optimizers import Adam
 from sklearn.metrics import f1_score
@@ -129,9 +129,9 @@ class Models:
 
         x = SpatialDropout1D(0.2)(x)
 
-        x = Bidirectional(LSTM(64, return_sequences =  True))(x)
+        x = Bidirectional(CuDNNLSTMCuDNNLSTM(64, return_sequences =  True))(x)
         x = SpatialDropout1D(0.2)(x)
-        x = Bidirectional(LSTM(64, return_sequences =  True))(x)
+        x = Bidirectional(CuDNNLSTM(64, return_sequences =  True))(x)
 
         last = Lambda(lambda t : t[:, -1])(x)
         max = GlobalMaxPooling1D()(x)
