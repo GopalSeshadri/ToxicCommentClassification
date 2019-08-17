@@ -63,6 +63,17 @@ app.layout = html.Div([
             [Input(component_id = 'submit-button', component_property = 'n_clicks')],
             [State(component_id = 'text-area', component_property = 'value')])
 def affect_table(n_clicks, text):
+    '''
+    This function is a callback that takes in an number of clicks and text area as input and
+    returns dictionary for data attribute of dash table
+
+    Parameters:
+    n_clicks (int) : Number of Clicks
+    text (str) : The text entered in the text box
+
+    Returns:
+    output_dict (dict) : A dictionary for data attribute 
+    '''
     MAX_SEQ_LENGTH = 200
     with open('Models/tokenizer.pickle', 'rb') as file:
         tokenizer = pickle.load(file)

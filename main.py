@@ -13,9 +13,6 @@ MAX_SEQ_LENGTH = 200
 comment, target = Preprocess.readTrainData()
 sequence, tokenizer, word2idx = Preprocess.tokenize(comment, MAX_VOCAB_SIZE)
 padded = Preprocess.padSequences(sequence, MAX_SEQ_LENGTH)
-# seq_sizes = pd.Series(np.array([len(each) for each in sequence]))
-# print(seq_sizes.describe())
-print(word2idx)
 
 ## Reading and Preprocessing Test Data
 comment_test, target_test = Preprocess.readTestData()
@@ -32,7 +29,7 @@ number_of_words = len(embedding_matrix)
 ## Saving the tokenizer
 with open('Models/tokenizer.pickle', 'wb') as file:
     pickle.dump(tokenizer, file, protocol = pickle.HIGHEST_PROTOCOL)
-# #######################################################################################
+#########################################################################################
 ## Fitting Models
 models = {'CNN' : Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH),
         'RNN' : Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH),
@@ -45,7 +42,7 @@ for each in models.keys():
     model.fit(padded, target,
                 batch_size = 128,
                 validation_split = 0.1,
-                epochs = 1,
+                epochs = 5,
                 shuffle = True)
 
     model_accuracy = model.evaluate(padded_test, target_test)
@@ -62,6 +59,6 @@ for each in models.keys():
 
     ## Saving the Models
     model_json = model.to_json()
-    with open('Models/{}_model.json'.format(each), 'w') as json_file:
+    with open('Models/{}_model.json'.format(each.lower()), 'w') as json_file:
         json_file.write(model_json)
-    model.save_weights('Models/{}_model.h5'.format(each))
+    model.save_weights('Models/{}_model.h5'.format(each.lower()))

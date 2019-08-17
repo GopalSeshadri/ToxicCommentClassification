@@ -15,7 +15,15 @@ class Preprocess:
     stop_words = set(stopwords.words('english'))
 
     def preprocessText(sentence):
-        # sentence = ' '.join(sentence.split())
+        '''
+        This function takes in a sentence and it returns a processed sentence
+
+        Parameters:
+        sentence (str) : Text to process
+
+        Returns:
+        sentence (str) : Processed Text
+        '''
         sentence = sentence.lower()
         #remove \n
         sentence = re.sub('\\n','',sentence)
@@ -31,6 +39,12 @@ class Preprocess:
 
     # Reading the Glove Vector
     def getWord2Vec():
+        '''
+        This function returns the dictionary of word vectors
+
+        Returns:
+        word2vec (dict) : A dictionary of word vectors
+        '''
         word2vec = {}
         with open('Embeddings/glove.6B.100d.txt', encoding = 'utf8') as file:
             for line in file:
@@ -40,6 +54,13 @@ class Preprocess:
 
     # Reading Training Data
     def readTrainData():
+        '''
+        This function returns the training data predictors and response variables
+
+        Returns:
+        comment (list) : A list that contains the input sentences. This is the predictor variable
+        target (list) : This is a list that contains the target labels.
+        '''
         train_df = pd.read_csv('Data/train.csv')
         train_df = train_df.dropna()
         train_df['comment_text'] = train_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
@@ -51,6 +72,13 @@ class Preprocess:
 
     # Reading Testing Data
     def readTestData():
+        '''
+        This function returns the testing data predictors and response variables
+
+        Returns:
+        comment (list) : A list that contains the input sentences. This is the predictor variable
+        target (list) : This is a list that contains the target labels.
+        '''
         test_df = pd.read_csv('Data/test.csv')
         test_df = test_df.dropna()
         test_df['comment_text'] = test_df['comment_text'].apply(lambda x: Preprocess.preprocessText(x))
@@ -64,16 +92,50 @@ class Preprocess:
 
     # Tokenize the data
     def tokenize(data, vocab_size):
+        '''
+        This function takes in data and vocabulary size and returns the tokenized sequence, tokenizer object and word indices
+        of the tokenizer.
+
+        Parameters:
+        data (list) : A list that contains the input sentences.
+        vocab_size (int) : The size of vocabulary.
+
+        Returns:
+        sequences (list) : A list of tokenized data records.
+        tokenizer (object) : A tokenizer object
+        word_index (dict) : A dictionary of tokenized data
+        '''
         tokenizer = Tokenizer(num_words = vocab_size)
         tokenizer.fit_on_texts(data)
         sequences = tokenizer.texts_to_sequences(data)
         return sequences, tokenizer, tokenizer.word_index
 
     def padSequences(sequence, max_seq_length):
+        '''
+        This function takes in data sequence and maximum sequence length. It returns the padded sequences with maximum length.
+
+        Parameters:
+        sequences (list) : A list of tokenized data records.
+        max_seq_length (int) : The maximum length of the input sequence
+
+        Returns:
+        padded_sequences (list) : A list of padded tokenized data
+        '''
         return pad_sequences(sequence, maxlen = max_seq_length)
 
     # Get the embedding matrix
     def getEmbeddingMatrix(max_vocab, word2idx, word2vec):
+        '''
+        This function takes in maximum vocabulary size, word2idx and word2vec and it returns the embedding matrix.
+
+        Parameters:
+        max_vocab (int) : Maximum vocabulary size.
+        word2idx (dict) : A dictionary of tokenized data
+        word2vec (dict) : A dictionay of word vectors
+
+        Returns:
+        embedding_matrix (numpy array) : A matrix of embedding vectors
+        '''
         number_of_words = min(max_vocab, len(word2idx) + 1)
         embedding_matrix = np.zeros((number_of_words, 100)) # Here 100 is the dimension of GloVe Embeddings
         embedding_matrix[0] = np.zeros((1, embedding_matrix.shape[1]))
