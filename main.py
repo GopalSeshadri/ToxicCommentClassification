@@ -31,11 +31,13 @@ with open('Models/tokenizer.pickle', 'wb') as file:
     pickle.dump(tokenizer, file, protocol = pickle.HIGHEST_PROTOCOL)
 #########################################################################################
 ## Fitting Models
-models = {'CNN' : Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH),
-        'RNN' : Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH),
-        'Hybrid' : Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH),
-        'MultiCNN' : Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH),
-        'MultiRNN' : Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH)}
+models = {
+        # 'CNN' : Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH),
+        # 'RNN' : Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH),
+        # 'Hybrid' : Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH),
+        'MultiCNN' : Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH)
+        # 'MultiRNN' : Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH)
+        }
 
 for each in models.keys():
     model = models[each]

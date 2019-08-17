@@ -20,25 +20,39 @@ toxic_label_df =  pd.DataFrame(toxic_label_dict)
 
 app.layout = html.Div([
     html.Div([
-        html.H1('Toxic Sentence Classification', style = {'font' : {'family' : 'Helvetica'}})
+        html.H1('Toxic Sentence Classification', style = {'fontFamily' : 'Helvetica',
+                                                        'textAlign' : 'center',
+                                                        'width' : '100%'})
     ], style = {'display' : 'flex'}),
 
     html.Div([
-        html.H3('Enter Text',
-            style = {'font' : {'size' : 16},
-                                'display' : 'inline-block'}),
+        html.Div([
+            html.H3('Enter Text',
+                style = {'font' : {'size' : 16},
+                                'display' : 'inline-block',
+                                'float' : 'left'}),
 
-        core.Textarea(id = 'text-area',
-            style = {'width': '100%',
-                    'height' : '40%',
-                    'display' : 'inline-block'}
-        ),
+            core.Textarea(id = 'text-area',
+                placeholder = 'Enter something here ...',
+                style = {'width': '600px',
+                        'height' : '200px',
+                        'display' : 'inline-block',
+                        'float' : 'left'}
+            )
+        ], style = {'width' : '100%'}),
 
-        html.Button(id = 'submit-button', children = 'Submit')
+        html.Div([
+            html.Button(id = 'submit-button', children = 'Submit',
+                        style = {'width' : '80px',
+                                'height' : '30px'})
+        ], style = {'width' : '100%',
+                    'paddingLeft' : '50px'})
+
     ], style = {'width' : '60%',
                 'height' : '80%',
-                'display' : 'inline-block',
-                'float' : 'left'}),
+                'display' : 'flex',
+                'float' : 'left',
+                'paddingLeft' : '50px'}),
 
     html.Div([
         dash_table.DataTable(
@@ -56,7 +70,9 @@ app.layout = html.Div([
                 'display' : 'inline-block',
                 'float' : 'left',
                 'paddingLeft' : '50px'})
-])
+], style = {'fontFamily' : 'Helvetica',
+            'width' : '100%',
+            'height' : '100%'})
 
 @app.callback([Output(component_id = 'table', component_property = 'data'),
             Output(component_id = 'table', component_property = 'style_data_conditional')],
@@ -72,8 +88,11 @@ def affect_table(n_clicks, text):
     text (str) : The text entered in the text box
 
     Returns:
-    output_dict (dict) : A dictionary for data attribute 
+    output_dict (dict) : A dictionary for data attribute
     '''
+    if text is None:
+        text = 'Enter something here ...'
+        
     MAX_SEQ_LENGTH = 200
     with open('Models/tokenizer.pickle', 'rb') as file:
         tokenizer = pickle.load(file)
@@ -83,11 +102,11 @@ def affect_table(n_clicks, text):
     text = tokenizer.texts_to_sequences(text)
     padded_text = Preprocess.padSequences(text, MAX_SEQ_LENGTH)
 
-    json_file = open('Models/mcnn_model.json', 'r')
+    json_file = open('Models/multicnn_model.json', 'r')
     loaded_model_json = json_file.read()
     json_file.close()
     loaded_model = model_from_json(loaded_model_json)
-    loaded_model.load_weights("Models/mcnn_model.h5")
+    loaded_model.load_weights("Models/multicnn_model.h5")
     prediction = loaded_model.predict(padded_text)
     prediction = [1 if p >= 0.5 else 0 for p in prediction[0]]
 
