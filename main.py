@@ -33,103 +33,35 @@ number_of_words = len(embedding_matrix)
 with open('Models/tokenizer.pickle', 'wb') as file:
     pickle.dump(tokenizer, file, protocol = pickle.HIGHEST_PROTOCOL)
 # #######################################################################################
-# ## Fitting CNN Model
-# cnn_model = Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH)
-# cnn_model.fit(padded, target,
-#             batch_size = 128,
-#             validation_split = 0.1,
-#             epochs = 1)
-#
-# cnn_model_accuracy = cnn_model.evaluate(padded_test, target_test)
-# print('[INFO] Test Accuracy of CNN Model is {}'.format(round(cnn_model_accuracy[1], 2)))
-#
-# ## Calculating AUC score for CNN model
-# auc_list = []
-# predicted = cnn_model.predict(padded_test)
-# for i in range(6):
-#     auc = roc_auc_score(target_test[:, i], predicted[:, i])
-#     auc_list.append(auc)
-# mean_auc = np.mean(auc_list)
-# print('[INFO] The mean AUC score over each tag is {}'.format(mean_auc))
-#
-# ## Saving the CNN Model
-# cnn_model_json = cnn_model.to_json()
-# with open('Models/cnn_model.json', 'w') as json_file:
-#     json_file.write(cnn_model_json)
-# cnn_model.save_weights('Models/cnn_model.h5')
-# #######################################################################################
-# ## Fitting RNN Model
-# rnn_model = Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH)
-# rnn_model.fit(padded, target,
-#             batch_size = 32,
-#             validation_split = 0.1,
-#             epochs = 1)
-#
-# rnn_model_accuracy = rnn_model.evaluate(padded_test, target_test)
-# print('[INFO] Test Accuracy of RNN Model is {}'.format(round(rnn_model_accuracy[1], 2)))
-#
-# ## Calculating AUC score for RNN model
-# auc_list = []
-# predicted = rnn_model.predict(padded_test)
-# for i in range(6):
-#     auc = roc_auc_score(target_test[:, i], predicted[:, i])
-#     auc_list.append(auc)
-# mean_auc = np.mean(auc_list)
-# print('[INFO] The mean AUC score over each tag is {}'.format(mean_auc))
-#
-# ## Saving the RNN Model
-# rnn_model_json = rnn_model.to_json()
-# with open('Models/rnn_model.json', 'w') as json_file:
-#     json_file.write(rnn_model_json)
-# rnn_model.save_weights('Models/rnn_model.h5')
-# #####################################################################################
-# ## Fitting Hybrid Model
-# hybrid_model = Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH)
-# hybrid_model.fit(padded, target,
-#             batch_size = 128,
-#             validation_split = 0.1,
-#             epochs = 1)
-#
-# hybrid_model_accuracy = hybrid_model.evaluate(padded_test, target_test)
-# print('[INFO] Test Accuracy of Hybrid Model is {}'.format(round(hybrid_model_accuracy[1], 2)))
-#
-# ## Calculating AUC score for Hybrid model
-# auc_list = []
-# predicted = hybrid_model.predict(padded_test)
-# for i in range(6):
-#     auc = roc_auc_score(target_test[:, i], predicted[:, i])
-#     auc_list.append(auc)
-# mean_auc = np.mean(auc_list)
-# print('[INFO] The mean AUC score over each tag is {}'.format(mean_auc))
-#
-# ## Saving the Hybrid Model
-# hybrid_model_json = hybrid_model.to_json()
-# with open('Models/hybrid_model.json', 'w') as json_file:
-#     json_file.write(hybrid_model_json)
-# hybrid_model.save_weights('Models/hybrid_model.h5')
-#####################################################################################
-## Fitting Multi Channel CNN Model
-mcnn_model = Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH)
-mcnn_model.fit(padded, target,
-            batch_size = 128,
-            validation_split = 0.1,
-            epochs = 1,
-            shuffle = True)
+## Fitting Models
+models = {'CNN' : Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH),
+        'RNN' : Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH),
+        'Hybrid' : Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH),
+        'MultiCNN' : Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH),
+        'MultiRNN' : Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH)}
 
-mcnn_model_accuracy = mcnn_model.evaluate(padded_test, target_test)
-print('[INFO] Test Accuracy of CNN Model is {}'.format(round(mcnn_model_accuracy[1], 2)))
+for each in models.keys():
+    model = models[each]
+    model.fit(padded, target,
+                batch_size = 128,
+                validation_split = 0.1,
+                epochs = 1,
+                shuffle = True)
 
-## Calculating AUC score for CNN model
-auc_list = []
-predicted = mcnn_model.predict(padded_test)
-for i in range(6):
-    auc = roc_auc_score(target_test[:, i], predicted[:, i])
-    auc_list.append(auc)
-mean_auc = np.mean(auc_list)
-print('[INFO] The mean AUC score over each tag is {}'.format(mean_auc))
+    model_accuracy = model.evaluate(padded_test, target_test)
+    print('[INFO] Test Accuracy of {} Model is {}'.format(each, round(model_accuracy[1], 2)))
 
-## Saving the CNN Model
-mcnn_model_json = mcnn_model.to_json()
-with open('Models/mcnn_model.json', 'w') as json_file:
-    json_file.write(mcnn_model_json)
-mcnn_model.save_weights('Models/mcnn_model.h5')
+    ## Calculating AUC score for models
+    auc_list = []
+    predicted = model.predict(padded_test)
+    for i in range(6):
+        auc = roc_auc_score(target_test[:, i], predicted[:, i])
+        auc_list.append(auc)
+    mean_auc = np.mean(auc_list)
+    print('[INFO] The mean AUC score of {} Model over each tag is {}'.format(each, mean_auc))
+
+    ## Saving the Models
+    model_json = model.to_json()
+    with open('Models/{}_model.json'.format(each), 'w') as json_file:
+        json_file.write(model_json)
+    model.save_weights('Models/{}_model.h5'.format(each))
