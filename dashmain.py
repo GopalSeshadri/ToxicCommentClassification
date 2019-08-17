@@ -67,14 +67,10 @@ def affect_table(n_clicks, text):
     with open('Models/tokenizer.pickle', 'rb') as file:
         tokenizer = pickle.load(file)
 
-    print(text, file =  sys.stderr)
     text = Preprocess.preprocessText(text)
     text = [list(np.array([each for each in text.split(' ')]).ravel())]
-    print(text, file =  sys.stderr)
     text = tokenizer.texts_to_sequences(text)
-    print(text, file = sys.stderr)
     padded_text = Preprocess.padSequences(text, MAX_SEQ_LENGTH)
-    print(padded_text, file = sys.stderr)
 
     json_file = open('Models/mcnn_model.json', 'r')
     loaded_model_json = json_file.read()
@@ -83,7 +79,6 @@ def affect_table(n_clicks, text):
     loaded_model.load_weights("Models/mcnn_model.h5")
     prediction = loaded_model.predict(padded_text)
     prediction = [1 if p >= 0.5 else 0 for p in prediction[0]]
-    print(prediction, file = sys.stderr)
 
     output_dict = {'label' : ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate'], 'p' : prediction}
     output_df =  pd.DataFrame(output_dict)
