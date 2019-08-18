@@ -1,5 +1,5 @@
-from keras.layers import Input, Embedding, Dense
-from keras.layers import Conv1D, MaxPooling1D, Concatenate
+from keras.layers import Input, Embedding, Dense, dot
+from keras.layers import Conv1D, MaxPooling1D, Concatenate, Reshape, Flatten
 from keras.layers import LSTM, Bidirectional, Dropout, SpatialDropout1D
 from keras.layers import GlobalMaxPooling1D, Lambda, GlobalAveragePooling1D
 from keras.models import Model
@@ -233,3 +233,37 @@ class Models:
         mhybrid_model = Model(input, output)
         mhybrid_model.compile(optimizer = Adam(lr = 1e-3, decay = 1e-6), loss = 'binary_crossentropy', metrics = ['accuracy'])
         return mhybrid_model
+
+    def usingNBSVM(embedding_matrix,  nbratio_matrix, max_seq_len):
+        '''
+        This function takes in an embedding matrix, nbratio matrix and max sequence length and returns model
+
+        Parameters:
+        embedding_matrix (2d Numpy Array) : A matrix of word vectors
+        nbratio_matrix (2d Numpy Array) : A matrix of naive bayes word ratios.
+        max_seq_len (int) : Maximum Length of input
+
+        Returns:
+        nbsvm_model : A keras model
+        '''
+        embedding_layer = Embedding(embedding_matrix.shape[0],
+                            embedding_matrix.shape[1],
+                            weights = [embedding_matrix],
+                            input_length = max_seq_len,
+                            trainable = False)
+        nb_layer = Embedding(nbratio_matrix.shape[0],
+                            nbratio_matrix.shape[1],
+                            input_length = max_seq_len,
+                            weights = [nbratio_matrix],
+                            trainable = False)
+
+        input = Input(shape = (max_seq_len,))
+        emb = embedding_layer(input)
+        nb = nb_layer(input)
+        x = dot([emb, nb], axes = 1)
+        x = Flatten()(x)
+        x = Dropout(rate = 0.5)(x)
+        output = Dense(6, activation = 'sigmoid')(x)
+        nbsvm_model = Model(input, output)
+        nbsvm_model.compile(optimizer = Adam(lr = 1e-3, decay = 1e-6), loss = 'binary_crossentropy', metrics = ['accuracy'])
+        return nbsvm_model

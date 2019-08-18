@@ -145,3 +145,12 @@ class Preprocess:
                 if embedding_vector is not None:
                     embedding_matrix[idx] = embedding_vector
         return embedding_matrix
+
+    ## Calculating Naive Bayes word count ratio
+    def pr(dtm, y, y_i):
+        '''
+        This function takes in document term matrix, target y values and y class labels.
+        It returns the count ratio.
+        '''
+        p = dtm[y==y_i].sum(0)
+        return (p+1) / ((y==y_i).sum()+1)
