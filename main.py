@@ -46,13 +46,13 @@ for i in range(NUM_CLASSES):
 ## The naive bayes log count ratio matrix captures the probability of a word appearing in document in one class against another class.
 nbratio_matrix = np.transpose(nbratio_matrix)
 #########################################################################################
-## Fitting Models
+# Fitting Models
 models = {
         # 'CNN' : Models.usingCNN(embedding_matrix, MAX_SEQ_LENGTH),
         # 'RNN' : Models.usingRNN(embedding_matrix, MAX_SEQ_LENGTH),
         # 'Hybrid' : Models.usingHybrid(embedding_matrix, MAX_SEQ_LENGTH),
-        # 'MultiCNN' : Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH),
-        # 'MultiRNN' : Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH),
+        'MultiCNN' : Models.usingMCNN(embedding_matrix, MAX_SEQ_LENGTH),
+        'MultiRNN' : Models.usingMRNN(embedding_matrix, MAX_SEQ_LENGTH),
         'NBSVM' : Models.usingNBSVM(embedding_matrix, nbratio_matrix, MAX_SEQ_LENGTH)
         }
 
