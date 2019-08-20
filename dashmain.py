@@ -16,7 +16,7 @@ from keras import backend as K
 app = dash.Dash()
 server = app.server
 
-toxic_label_dict = {'label' : ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate'], 'p' : [0, 0, 0, 0, 0, 0]}
+toxic_label_dict = {'label' : ['Toxic', 'Severe Toxic', 'Obscene', 'Threat', 'Insult', 'Identity Hate'], 'p' : [0, 0, 0, 0, 0, 0]}
 toxic_label_df =  pd.DataFrame(toxic_label_dict)
 
 app.layout = html.Div([
@@ -86,11 +86,11 @@ def findPrediction(model_name, padded_text):
     Returns:
     prediction (list) : The list of length six with prediction for the given input, one for each label.
     '''
-    json_file = open('Models/{}_model.json'.format(model_name), 'r')
+    json_file = open('Models/{}_model.json'.format(model_name.lower()), 'r')
     loaded_model_json = json_file.read()
     json_file.close()
     loaded_model = model_from_json(loaded_model_json)
-    loaded_model.load_weights("Models/{}_model.h5".format(model_name))
+    loaded_model.load_weights("Models/{}_model.h5".format(model_name.lower()))
     prediction = loaded_model.predict(padded_text)
     prediction = [1 if p >= 0.5 else 0 for p in prediction[0]]
     return prediction
