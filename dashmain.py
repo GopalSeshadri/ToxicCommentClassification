@@ -14,6 +14,7 @@ from keras.models import model_from_json
 from keras import backend as K
 
 app = dash.Dash()
+server = app.server
 
 toxic_label_dict = {'label' : ['toxic', 'severe_toxic', 'obscene', 'threat', 'insult', 'identity_hate'], 'p' : [0, 0, 0, 0, 0, 0]}
 toxic_label_df =  pd.DataFrame(toxic_label_dict)

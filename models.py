@@ -4,7 +4,6 @@ from keras.layers import LSTM, Bidirectional, Dropout, SpatialDropout1D
 from keras.layers import GlobalMaxPooling1D, Lambda, GlobalAveragePooling1D
 from keras.models import Model
 from keras.optimizers import Adam
-from sklearn.metrics import f1_score
 
 class Models:
     def usingCNN(embedding_matrix,  max_seq_len):
