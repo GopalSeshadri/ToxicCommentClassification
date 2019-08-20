@@ -2,7 +2,6 @@
 /Data/
 /Embeddings/
 *.csv
-*.txt
 *.pyc
 *.DS_Store
 .env
